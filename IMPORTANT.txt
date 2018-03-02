@@ -1,0 +1,15 @@
+English:
+
+Do not use this code to create another version of the plugin. If you do, please do not post it to Spigot and do not leave your name as Author, do not change anything in this code.
+If you want to advance the plugin, let me know, I say if I authorize it or not, when you finish it, you pass it to me and I put you as a contributor.
+If you like the plugin please leave me 5 stars in Spigot.
+Thanks for downloading my plugin and reading this, I hope you support me.
+If you do not comply with this, the plugin that your upload will be reported.
+
+Spanish:
+
+No uses este codigo para crear otra version del plugin. Si lo haces, porfavor no lo publiques a Spigot y no dejes tu nombre como Autor, no cambies nada de este codigo.
+Si quieres avanzar el plugin, avisame, yo digo si te lo autorizo o no, cuando lo termines me lo pasas y te pongo como contribuidor
+Si te gusta el plugin porfavor dejame 5 estrellas en Spigot.
+Gracias por descargar mi plugin y leer esto, espero que me apoyes.
+Si no cumples con esto, el plugin que tu subas será denunciado.
