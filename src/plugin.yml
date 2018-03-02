@@ -1,0 +1,9 @@
+name: GoodSS
+main: me.LuisArtz.SS.Main
+author: LuisArtz
+version: 2.1
+description: The unique ScreenShare plugin of Spigot
+
+commands:
+  gss:
+    description: Set SS Mode

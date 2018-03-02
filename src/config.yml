@@ -1,0 +1,88 @@
+#General Messages Config#
+Reload: '&aThe plugin &3&lGood&b&lSS&a has been reloaded'
+PermissionMsg: '&cYou dont have permissions for the command'
+StartSSGlobal: '&7The player &c%plss%&7 is in SS with &a%player%'
+StartSS_Staff: '&7You have started the SS with &c%plss%'
+LeaveSSGlobal: '&7The player &a%player%&7 has freed &a%plss%'
+LeaveSS_Player: '&7The player &a%player%&7 has left you free, sorry for the inconvenience'
+UnbanCorrect: '&cThis player has been unbanned correctly'
+UnbanIncorrect: |-
+  &cThis player is not banned
+  &cOr you were wrong in name
+NotInSS: '&cThis player is not in SS'
+NowInSS: '&cThis player is already in SS'
+PlayerDoesNotExist: '&cThis player does not exist'
+#All SS MESSAGES#
+StartSS_Player: |-
+  &c
+  &f▇▇▇▇▇▇▇▇▇
+  &f▇▇▇▇&c▇&f▇▇▇▇
+  &f▇▇▇&c▇&0▇&c▇&f▇▇▇
+  &f▇▇&c▇&6▇&0▇&6▇&c▇&f▇▇
+  &f▇▇&c▇&6▇&0▇&6▇§c▇&f▇▇ &e%plss% At this moment you are in SS
+  &f▇▇&c▇&6▇&0▇&6▇&c▇&f▇▇ &eIf you disconnect you will be &4&lBANNED
+  &f▇&c▇&6▇▇▇▇▇&c▇&f▇ &cYou can talk in the chat or you can use /ac
+  &c▇&6▇▇▇&0▇&6▇▇▇&c▇ &cWe can see your msgs and we'll answer you
+  &c▇▇▇▇▇▇▇▇▇ &cYou must send your skype or add to %user%
+  &f▇▇▇▇▇▇▇▇▇ &cPlayer SS: %player%
+  &c
+#ALERT: If the player moves a lot, he may spam messages.
+SSMessageEvent: |-
+  &c
+  &f▇▇▇▇▇▇▇▇▇
+  &f▇▇▇▇&c▇&f▇▇▇▇
+  &f▇▇▇&c▇&0▇&c▇&f▇▇▇
+  &f▇▇&c▇&6▇&0▇&6▇&c▇&f▇▇
+  &f▇▇&c▇&6▇&0▇&6▇§c▇&f▇▇ &e%plss% At this moment you are in SS
+  &f▇▇&c▇&6▇&0▇&6▇&c▇&f▇▇ &eIf you disconnect you will be &4&lBANNED
+  &f▇&c▇&6▇▇▇▇▇&c▇&f▇ &cYou can talk in the chat or you can use /ac
+  &c▇&6▇▇▇&0▇&6▇▇▇&c▇ &cWe can see your msg and we'll answer you
+  &c▇▇▇▇▇▇▇▇▇
+  &f▇▇▇▇▇▇▇▇▇
+  &c
+PlayerSSChatFormat: '&4&lGSS &8» &7%player% &8» &c %msg%'
+#Ban messages format#
+BanFormat: |-
+  &d---------------------
+  &d%bannedpl% banned Permanently: %reason% .&5&l%player%
+  &d---------------------
+AutoBanReason: '(Automatic Ban)Disconnect in SS'
+AutoBanAuthor: 'GoodSS'
+BanFormatDisconnect: |-
+  &4You have been banned permanently(GoodSS)
+  &c
+  &5Banned by: &d%player%
+  &5Reason: &d%reason%
+  &6Date: &e%date%
+  &5Time: &dPermanente
+  &3
+  &2
+  &aIf the ban was unfair
+  &aWe recommend you to appeal on our page
+  &2&mhttps://www.appealpage.net/
+  &cIf the ban was fair
+  &cWe invite you to buy your unban
+  &4&mhttps://www.buypage.net/
+  &c
+  &3&l&k||&b&lYourServer&3&l&k||
+#Inventory Format#
+OpeningInventory: '&b%player% you are opening the inventory of %plss%'
+#Teleport
+Teleport: |-
+  &cYou are teleport to:
+  &4%plss%
+PlayerInSS: |-
+  &4%plss%&c is currently in SS
+  &cPlease wait a moment
+  &cDon't attack to the player please
+#List of banneds players#
+NotBans: |-
+  &cFor now, no ban has been made.
+  &cThere is no one to unseat.
+BanListFormat: |-
+  §c-----------------------
+  §5%player%
+  §5Reason: §d%reason%
+  §5Banned by: §d%staff%
+  §5Date: §d%date%
+  §c-----------------------
