@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
@@ -25,14 +26,30 @@ public class Events implements Listener {
        this.plugin = plugin;
     }
     @EventHandler
+    public void updateAlert(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        if (p.hasPermission("gss.updates")) {
+            if (!plugin.getVersion().equals(plugin.getLastV())) {
+                p.sendMessage(" ");
+                p.sendMessage("§3======================");
+                p.sendMessage("§bGood§fSS");
+                p.sendMessage("§a§l§k||§2New update!§a§l§k||");
+                p.sendMessage("§3Your version: §b"+plugin.getVersion());
+                p.sendMessage("§3New version: §b"+plugin.getLastV());
+                p.sendMessage("§2Download the new version here!: §ahttps://www.spigotmc.org/resources/53515/");
+                p.sendMessage("§3By §bLuis§lArtz");
+                p.sendMessage("§3======================");
+                p.sendMessage(" ");
+            }
+        }
+    }
+    @EventHandler
     public void playerIsBanned(PlayerPreLoginEvent e) {
         FileConfiguration bans = plugin.getBans();
         if (bans.contains("BanManager")) {
             if (bans.contains("BanManager."+e.getName())) {
-                if (bans.getString("BanManager."+e.getName()+".UUID").equalsIgnoreCase(e.getUniqueId().toString())){
-                    e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getName()+".date")));
-                    e.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, e.getKickMessage());
-                }
+                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getName()+".date")));
+                e.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, e.getKickMessage());
             }
         }
     }
