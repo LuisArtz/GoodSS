@@ -8,7 +8,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,36 +17,56 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Main extends JavaPlugin {
+    // All fundamental data
     FileConfiguration bans = null;
     File bansFile = null;
+    FileConfiguration ss = null;
+    File ssFile = null;
+    FileConfiguration sf = null;
+    File sfFile = null;
     public String lastversion;
     public String version = getDescription().getVersion();
     public static PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 10000 * 200, 100, false, true);
-    public static ArrayList<String> frozen = new ArrayList();
-    public static ArrayList<String> waiting = new ArrayList();
     @Override
     public void onEnable() {
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
-        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v3.0");
+        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v4.0");
         Bukkit.getServer().getConsoleSender().sendMessage("Running in " + Bukkit.getServerName());
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
+        // Register all ymls
         saveDefaultConfig();
         registerEvents();
         registerCommands();
-        saveConfig();
         registerBans();
+        registerSF();
+        registerSS();
         reloadConfig();
         reloadBans();
         updateChecker();
     }
+    @Override
+    public void onDisable(){
+        ssFile = new File(getDataFolder(), "tempssdata.yml");
+        if (ssFile.exists()){
+            ssFile.delete();
+            Bukkit.getServer().getConsoleSender().sendMessage("tempssdata Has deleted");
+        }
+        sfFile = new File(getDataFolder(), "tempsfdata.yml");
+        if (sfFile.exists()){
+            sfFile.delete();
+            Bukkit.getServer().getConsoleSender().sendMessage("tempsfdata Has deleted");
+        }
+    }
+    // Register events
     public void registerEvents() {
         PluginManager pm = Bukkit.getServer().getPluginManager();
         pm.registerEvents(new Events(this), this);
     }
-    
+    // Command
     public void registerCommands() {
         getCommand("gss").setExecutor(new CmdgSS(this));
     }
+    // Bans.yml load
     public FileConfiguration getBans(){
         if(bans == null){
             reloadBans();
@@ -86,6 +105,7 @@ public class Main extends JavaPlugin {
             saveBans();
         }
     }
+    // Update check when start server
     public void updateChecker(){        
         try{
             HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=53515").openConnection();
@@ -105,7 +125,7 @@ public class Main extends JavaPlugin {
                     Bukkit.getConsoleSender().sendMessage("§3Your version: §b"+getDescription().getVersion());
                     Bukkit.getConsoleSender().sendMessage("§3New version: §b"+lastversion);
                     Bukkit.getConsoleSender().sendMessage("§2Download the new version here!: §ahttps://www.spigotmc.org/resources/53515/");
-                    Bukkit.getConsoleSender().sendMessage("§3By §bLuis§lArtz");
+                    Bukkit.getConsoleSender().sendMessage("§3By §b§lLuis§f§lArtz");
                     Bukkit.getConsoleSender().sendMessage("§3======================");
                     Bukkit.getConsoleSender().sendMessage(" ");
                     Bukkit.getConsoleSender().sendMessage(" ");
@@ -119,7 +139,7 @@ public class Main extends JavaPlugin {
                     Bukkit.getConsoleSender().sendMessage("§a§l§k||§2Now updated!§a§l§k||");
                     Bukkit.getConsoleSender().sendMessage("§3Last version: §b"+getDescription().getVersion());
                     Bukkit.getConsoleSender().sendMessage("§2Thanks for use §bGood§fSS");
-                    Bukkit.getConsoleSender().sendMessage("§3By §bLuis§lArtz");
+                    Bukkit.getConsoleSender().sendMessage("§3By §b§lLuis§f§lArtz");
                     Bukkit.getConsoleSender().sendMessage("§3======================");
                     Bukkit.getConsoleSender().sendMessage(" ");
                     Bukkit.getConsoleSender().sendMessage(" ");
@@ -134,7 +154,7 @@ public class Main extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage("§bGood§fSS");
             Bukkit.getConsoleSender().sendMessage("§cError while checking update.");
             Bukkit.getConsoleSender().sendMessage("§cSee: https://www.spigotmc.org/resources/53515/");
-            Bukkit.getConsoleSender().sendMessage("§3By §bLuis§lArtz");
+            Bukkit.getConsoleSender().sendMessage("§3By §b§lLuis§f§lArtz");
             Bukkit.getConsoleSender().sendMessage("§3======================");
             Bukkit.getConsoleSender().sendMessage("(!)");
             Bukkit.getConsoleSender().sendMessage("(!)");
@@ -147,5 +167,82 @@ public class Main extends JavaPlugin {
     }
     public String getLastV() {
         return lastversion;
+    }
+    // All TempSSData.yml (The file will deleted when stop plugins)
+    public FileConfiguration getSS(){
+        if(ss == null){
+            reloadSS();
+        }
+        return ss;
+    }
+    public void reloadSS(){
+        if(ss == null){
+            ssFile = new File(getDataFolder(),"tempssdata.yml");
+        }
+        ss = YamlConfiguration.loadConfiguration(ssFile);
+        Reader defConfigStream;
+        try{
+            defConfigStream = new InputStreamReader(this.getResource("tempssdata.yml"),"UTF8");
+            if(defConfigStream != null){
+                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+                ss.setDefaults(defConfig);
+            }			
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+            Bukkit.getServer().getLogger().warning("Error reloading the tempssdata.yml");
+        }
+    }
+    public void saveSS(){
+        try{
+            ss.save(ssFile);			
+       }catch (IOException e){
+            e.printStackTrace();
+            Bukkit.getServer().getLogger().warning("Error saving the tempssdata.yml");
+        }
+    }
+    public void registerSS(){
+        ssFile = new File(this.getDataFolder(),"tempssdata.yml");
+        if(!ssFile.exists()){
+            this.getSS().options().copyDefaults(true);
+            saveSS();
+        }
+    }
+    public FileConfiguration getSF(){
+        if(sf == null){
+            reloadSF();
+        }
+        return sf;
+    }
+    public void reloadSF(){
+        if(sf == null){
+            sfFile = new File(getDataFolder(),"tempsfdata.yml");
+        }
+        sf = YamlConfiguration.loadConfiguration(sfFile);
+        Reader defConfigStream;
+        try{
+            defConfigStream = new InputStreamReader(this.getResource("tempsfdata.yml"),"UTF8");
+            if(defConfigStream != null){
+                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+                sf.setDefaults(defConfig);
+            }			
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+            Bukkit.getServer().getLogger().warning("Error reloading the tempsfdata.yml");
+        }
+    }
+    public void saveSF(){
+        try{
+            sf.save(sfFile);
+       }catch (IOException e){
+            e.printStackTrace();
+            Bukkit.getServer().getLogger().warning("Error saving the tempsfdata.yml");
+        }
+    }
+    public void registerSF(){
+        sfFile = new File(this.getDataFolder(),"tempsfdata.yml");
+        if(!sfFile.exists()){
+            this.getSF().options().copyDefaults(true);
+            saveSF();
+        }
     }
 }
