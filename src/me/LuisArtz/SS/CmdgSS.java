@@ -3,7 +3,6 @@ package me.LuisArtz.SS;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import static me.LuisArtz.SS.Main.effect;
-import static me.LuisArtz.SS.Main.frozen;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,20 +27,20 @@ public class CmdgSS implements CommandExecutor {
             if (p.hasPermission("gss.usage")) {
                 if (args.length == 0) {
                     p.sendMessage(" ");
-                    p.sendMessage("§b§l§k||§3§lGoodSS v3.0§b§l§k||");
+                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv4.0§3§l§k||");
                     p.sendMessage(" ");
                     p.sendMessage("§b/gss §3reload");
-                    p.sendMessage("§b/gss §3start (player) (your username)");
-                    p.sendMessage("§b/gss §3leave (player)");
-                    p.sendMessage("§b/gss §3ban (player) (reason)");
-                    p.sendMessage("§b/gss §3inv (player)");
-                    p.sendMessage("§b/gss §3tp (player)");
-                    p.sendMessage("§b/gss §3unban (player)");
+                    p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
+                    p.sendMessage("§b/gss §3leave");
+                    p.sendMessage("§b/gss §3ban <reason>");
+                    p.sendMessage("§b/gss §3inv");
+                    p.sendMessage("§b/gss §3tp");
+                    p.sendMessage("§b/gss §3unban <player>");
                     p.sendMessage("§b/gss §3banlist");
                     p.sendMessage("§b/gss §3checkupdate");
                     p.sendMessage("§b/gss §3author");
                     p.sendMessage(" ");
-                    p.sendMessage("§b§l§k||§3§lBy LuisArtz§b§l§k||");
+                    p.sendMessage("§3§l§k||§3§lBy §b§lLuis§f§lArtz§3§l§k||");
                     p.sendMessage(" ");
                 }else{
                     if (args[0].equalsIgnoreCase("reload")) {
@@ -71,24 +70,38 @@ public class CmdgSS implements CommandExecutor {
                     }else if (args[0].equalsIgnoreCase("start")){
                         try{
                             Player p2 = Bukkit.getServer().getPlayer(args[1]);
+                            FileConfiguration ss = plugin.getSS();
+                            FileConfiguration sf = plugin.getSF();
                             if (args.length > 2) {
                                 if (p2 == null){
                                     p.sendMessage(plugin.getConfig().getString("PlayerDoesNotExist").replaceAll("&", "§"));
                                 }else{
-                                    if (frozen.contains(p2.getName())) {
+                                    if ((ss.contains("ActualSS")) && (ss.contains("ActualSS."+p2.getName()))){
                                         p.sendMessage(plugin.getConfig().getString("NowInSS").replaceAll("&", "§"));
                                     }else{
-                                        String user = "";
-                                        for (int i = 2; i < args.length; i++) {
-                                            user = user + args[i] + ' ';
+                                        if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))) {
+                                            p.sendMessage(plugin.getConfig().getString("StaffInSS").replaceAll("&", "§"));
+                                        }else{
+                                            String user = "";
+                                            for (int i = 2; i < args.length; i++) {
+                                                user = user + args[i] + ' ';
+                                            }
+                                            String date = new SimpleDateFormat("HH:mm").format(new Date(System.currentTimeMillis()));
+                                            ss.set("ActualSS."+p2.getName()+".staff", p.getName());
+                                            ss.set("ActualSS."+p2.getName()+".started", date);
+                                            ss.set("ActualSS."+p2.getName()+".uuid", p2.getUniqueId().toString());
+                                            ss.set("ActualSS."+p2.getName()+".contact", user);
+                                            sf.set("StaffSS."+p.getName()+".user", p2.getName());
+                                            sf.set("StaffSS."+p.getName()+".started", date);
+                                            sf.set("StaffSS."+p.getName()+".uuid", p.getUniqueId().toString());
+                                            sf.set("StaffSS."+p.getName()+".contact", user);
+                                            p2.addPotionEffect(effect);
+                                            Bukkit.broadcastMessage(plugin.getConfig().getString("StartSSGlobal").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", p2.getName()).replace("%user%", user));
+                                            p2.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", p2.getName()).replace("%user%", user).replace("%started%", date));
+                                            p.teleport(p2.getLocation());
+                                            PlayerInventory pynv = p2.getInventory();
+                                            p.openInventory(pynv);
                                         }
-                                        frozen.add(p2.getName());
-                                        p2.addPotionEffect(effect);
-                                        Bukkit.broadcastMessage(plugin.getConfig().getString("StartSSGlobal").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", p2.getName()).replace("%user%", user));
-                                        p2.sendMessage(plugin.getConfig().getString("StartSS_Player").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", p2.getName()).replace("%user%", user));
-                                        p.teleport(p2.getLocation());
-                                        PlayerInventory pynv = p2.getInventory();
-                                        p.openInventory(pynv);
                                     }
                                 }
                             }else{
@@ -103,82 +116,87 @@ public class CmdgSS implements CommandExecutor {
                         }
                     }else if (args[0].equalsIgnoreCase("ban")) {
                         try{
-                            Player p2 = Bukkit.getServer().getPlayer(args[1]);
-                            if (args.length > 2) {
-                                if (p2 == null){
-                                    p.sendMessage(plugin.getConfig().getString("PlayerDoesNotExist").replaceAll("&", "§"));
-                                }else{
-                                    Player pb = Bukkit.getServer().getPlayer(args[1]);
-                                    if (frozen.contains(pb.getName())) {
-                                        String date = new SimpleDateFormat("dd/MM/yy HH:mm").format(new Date(System.currentTimeMillis()));
-                                        frozen.remove(pb.getName());
-                                        pb.removePotionEffect(PotionEffectType.BLINDNESS);
-                                        String razon = "";
-                                        for (int i = 2; i < args.length; i++) {
-                                            razon = razon + args[i] + ' ';
-                                        }
+                            if (args.length > 1) {
+                                String date = new SimpleDateFormat("dd/MM/yy HH:mm").format(new Date(System.currentTimeMillis()));
+                                FileConfiguration ss = plugin.getSS();
+                                FileConfiguration sf = plugin.getSF();
+                                if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))){
+                                    for (Player pz : Bukkit.getServer().getOnlinePlayers()) {
+                                        Player pb = pz;
+                                        if (pb.getName().equals(sf.getString("StaffSS."+p.getName()+".user"))) {
+                                            pb.removePotionEffect(PotionEffectType.BLINDNESS);
+                                            String razon = "";
+                                            for (int i = 1; i < args.length; i++) {
+                                                razon = razon + args[i] + ' ';
+                                            }
                                             Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%bannedpl%", pb.getName()));
                                             pb.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%date%", date));
-                                            pb.removePotionEffect(PotionEffectType.BLINDNESS);
-                                        FileConfiguration bans = plugin.getBans();
-                                        if (bans.contains("BanManager")){
-                                            if (!bans.contains("BanManager."+p2.getName()) | !bans.getStringList("BanListHistory").contains(p2.getName())){
+                                             pb.removePotionEffect(PotionEffectType.BLINDNESS);
+                                            FileConfiguration bans = plugin.getBans();
+                                            if (bans.contains("BanManager")){
+                                                if (!bans.contains("BanManager."+pb.getName())){
+                                                    bans.set("BanManager."+pb.getName()+".reason", razon);
+                                                    bans.set("BanManager."+pb.getName()+".UUID", pb.getUniqueId().toString());
+                                                    bans.set("BanManager."+pb.getName()+".staff", p.getName());
+                                                    bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
+                                                    bans.set("BanManager."+pb.getName()+".date", date);
+                                                    ss.set("ActualSS."+pb.getName(), null);
+                                                    sf.set("StaffSS."+p.getName(), null);
+                                                    plugin.saveBans();
+                                                    plugin.saveSS();
+                                                    plugin.saveSF();
+                                                }
+                                            }else{
                                                 bans.set("BanManager."+pb.getName()+".reason", razon);
                                                 bans.set("BanManager."+pb.getName()+".UUID", pb.getUniqueId().toString());
                                                 bans.set("BanManager."+pb.getName()+".staff", p.getName());
                                                 bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                                                 bans.set("BanManager."+pb.getName()+".date", date);
+                                                ss.set("ActualSS."+pb.getName(), null);
+                                                sf.set("StaffSS."+p.getName(), null);
                                                 plugin.saveBans();
+                                                plugin.saveSS();
+                                                plugin.saveSF();
                                             }
-                                        }else{
-                                            bans.set("BanManager."+p2.getName()+".reason", razon);
-                                            bans.set("BanManager."+pb.getName()+".UUID", pb.getUniqueId().toString());
-                                            bans.set("BanManager."+p2.getName()+".staff", p.getName());
-                                            bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
-                                            bans.set("BanManager."+pb.getName()+".date", date);
-                                            plugin.saveBans();
                                         }
-                                    } else {
-                                        p.sendMessage(plugin.getConfig().getString("NotInSS").replaceAll("&", "§"));
                                     }
+                                }else{
+                                    p.sendMessage(plugin.getConfig().getString("StaffNotInSS").replaceAll("&", "§"));
                                 }
                             }else{
                                 p.sendMessage(" ");
-                                p.sendMessage("§3Use: §b/gss ban (player) (reason)");
+                                p.sendMessage("§3Use: §b/gss ban (reason)");
                                 p.sendMessage(" ");
                             }
                         }catch(Exception e){
                             p.sendMessage(" ");
-                            p.sendMessage("§3Use: §b/gss ban (player) (reason)");
+                            p.sendMessage("§3Use: §b/gss ban (reason)");
                             p.sendMessage(" ");
                         }
                     }else if (args[0].equalsIgnoreCase("leave")) {
                         try{
-                            Player pd = Bukkit.getPlayer(args[1]);
-                            if (args.length > 1) {    
-                                if (pd == null) {
-                                    p.sendMessage(plugin.getConfig().getString("PlayerDoesNotExist").replaceAll("&", "§"));
-                                }else{
-                                    if (frozen.contains(pd.getName())){
-                                        frozen.remove(pd.getName());
+                            FileConfiguration ss = plugin.getSS();
+                            FileConfiguration sf = plugin.getSF();
+                            if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))){
+                                for (Player pd : Bukkit.getServer().getOnlinePlayers()) {
+                                    if (pd.getName().equals(sf.getString("StaffSS."+p.getName()+".user"))) {
                                         pd.sendMessage(plugin.getConfig().getString("LeaveSS_Player").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", pd.getName()));
                                         pd.setCanPickupItems(true);
                                         Bukkit.broadcastMessage(plugin.getConfig().getString("LeaveSSGlobal").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", pd.getName()));
                                         pd.removePotionEffect(PotionEffectType.BLINDNESS);
-                                    }else{
-                                        p.sendMessage(plugin.getConfig().getString("NotInSS").replaceAll("&", "§"));
-                                    }   
+                                        ss.set("ActualSS."+pd.getName(), null);
+                                        sf.set("StaffSS."+p.getName(), null);
+                                        plugin.saveSS();
+                                        plugin.saveSF();
+                                    }
                                 }
                             }else{
-                                p.sendMessage(" ");
-                                p.sendMessage("§3Use: §b/gss leave (player)");
-                                p.sendMessage(" ");
+                                p.sendMessage(plugin.getConfig().getString("StaffNotInSS").replaceAll("&", "§"));
                             }
                         }catch(Exception ax){
-                            p.sendMessage(" ");
-                            p.sendMessage("§3Use: §b/gss leave (player)");
-                            p.sendMessage(" ");
-                            
+                            p.sendMessage("§cHere is an error!");
+                            p.sendMessage("§cCheck the console!");
+                            ax.printStackTrace();
                         }
                     }else if (args[0].equalsIgnoreCase("unban")) {
                         if (args.length > 1) {
@@ -208,41 +226,29 @@ public class CmdgSS implements CommandExecutor {
                             p.sendMessage(" ");
                         }
                     }else if (args[0].equalsIgnoreCase("inv")) {
-                        if (args.length > 1) {
-                            Player p2 = Bukkit.getServer().getPlayer(args[1]);
-                            if (p2 == null) {
-                                p.sendMessage(plugin.getConfig().getString("PlayerDoesNotExist").replaceAll("&", "§"));
-                            }else{
-                                if (frozen.contains(p2.getName())) {
-                                    PlayerInventory pinv = p.getInventory();
+                        FileConfiguration sf = plugin.getSF();
+                        if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))){
+                            for (Player pd : Bukkit.getServer().getOnlinePlayers()) {
+                                if (pd.getName().equals(sf.getString("StaffSS."+p.getName()+".user"))) {
+                                    PlayerInventory pinv = pd.getInventory();
                                     p.openInventory(pinv);
-                                    p.sendMessage(plugin.getConfig().getString("OpeningInventory").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", p2.getName()));   
-                                }else{
-                                    p.sendMessage(plugin.getConfig().getString("NotInSS").replaceAll("&", "§"));
+                                    p.sendMessage(plugin.getConfig().getString("OpeningInventory").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", pd.getName()));
                                 }
                             }
                         }else{
-                            p.sendMessage(" ");
-                            p.sendMessage("§3Use: §b/gss inv (player)");
-                            p.sendMessage(" ");
+                            p.sendMessage(plugin.getConfig().getString("StaffNotInSS").replaceAll("&", "§"));
                         }
                     }else if (args[0].equalsIgnoreCase("tp")) {
-                        if (args.length > 1) {
-                            Player p2 = Bukkit.getServer().getPlayer(args[1]);
-                            if (p2 == null) {
-                                p.sendMessage(plugin.getConfig().getString("PlayerDoesNotExist").replaceAll("&", "§"));
-                            }else{
-                                if (frozen.contains(p2.getName())) {
-                                    p.teleport(p2.getLocation());
-                                    p.sendMessage(plugin.getConfig().getString("Teleport").replaceAll("&", "§").replace("%plss%", p2.getName()));
-                                }else{
-                                    p.sendMessage(plugin.getConfig().getString("NotInSS").replaceAll("&", "§"));
+                        FileConfiguration sf = plugin.getSF();
+                        if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))){
+                            for (Player pd : Bukkit.getServer().getOnlinePlayers()) {
+                                if (pd.getName().equals(sf.getString("StaffSS."+p.getName()+".user"))) {
+                                    p.teleport(pd.getLocation());
+                                    p.sendMessage(plugin.getConfig().getString("Teleport").replaceAll("&", "§").replace("%plss%", pd.getName()));
                                 }
                             }
                         }else{
-                            p.sendMessage(" ");
-                            p.sendMessage("§3Use: §b/gss tp (player)");
-                            p.sendMessage(" ");
+                            p.sendMessage(plugin.getConfig().getString("StaffNotInSS").replaceAll("&", "§"));
                         }
                     }else if(args[0].equalsIgnoreCase("checkupdate")){
                         if (p.hasPermission("gss.updates")) {
@@ -254,7 +260,7 @@ public class CmdgSS implements CommandExecutor {
                                 p.sendMessage("§3Your version: §b"+plugin.getVersion());
                                 p.sendMessage("§3New version: §b"+plugin.getLastV());
                                 p.sendMessage("§2Download the new version here!: §ahttps://www.spigotmc.org/resources/53515/");
-                                p.sendMessage("§3By §bLuis§lArtz");
+                                p.sendMessage("§3By §b§lLuis§f§lArtz");
                                 p.sendMessage("§3======================");
                                p.sendMessage(" ");
                             }else{
@@ -264,7 +270,7 @@ public class CmdgSS implements CommandExecutor {
                                p.sendMessage("§a§l§k||§2Now updated!§a§l§k||");
                                p.sendMessage("§3Last version: §b"+plugin.getVersion());
                                p.sendMessage("§2Thanks for use §bGood§fSS");
-                               p.sendMessage("§3By §bLuis§lArtz");
+                               p.sendMessage("§3By §b§lLuis§f§lArtz");
                                p.sendMessage("§3======================");
                                p.sendMessage(" ");
                             }
@@ -273,7 +279,7 @@ public class CmdgSS implements CommandExecutor {
                         }
                     }else if(args[0].equalsIgnoreCase("author")){
                         p.sendMessage(" ");
-                        p.sendMessage("§2=========================");
+                        p.sendMessage("§3=========================");
                         p.sendMessage("§3§lAuthor:");
                         p.sendMessage("§b§lLuis§f§lArtz");
                         p.sendMessage("§6§lSpigot:");
@@ -282,24 +288,24 @@ public class CmdgSS implements CommandExecutor {
                         p.sendMessage("§bhttps://twitter.com/xLuisArtz/");
                         p.sendMessage("§1§lFaceBook:");
                         p.sendMessage("§9https://www.facebook.com/messages/t/zZLuisArtzZz/");
-                        p.sendMessage("§2=========================");
+                        p.sendMessage("§3=========================");
                         p.sendMessage(" ");
                     }else{
                         p.sendMessage(" ");
-                        p.sendMessage("§b§l§k||§3§lGoodSS v3.0§b§l§k||");
+                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv4.0§3§l§k||");
                         p.sendMessage(" ");
                         p.sendMessage("§b/gss §3reload");
-                        p.sendMessage("§b/gss §3start (player) (your username)");
-                        p.sendMessage("§b/gss §3leave (player)");
-                        p.sendMessage("§b/gss §3ban (player) (reason)");
-                        p.sendMessage("§b/gss §3inv (player)");
-                        p.sendMessage("§b/gss §3tp (player)");
-                        p.sendMessage("§b/gss §3unban (player)");
+                        p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
+                        p.sendMessage("§b/gss §3leave");
+                        p.sendMessage("§b/gss §3ban <reason>");
+                        p.sendMessage("§b/gss §3inv");
+                        p.sendMessage("§b/gss §3tp");
+                        p.sendMessage("§b/gss §3unban <player>");
                         p.sendMessage("§b/gss §3checkupdate");
                         p.sendMessage("§b/gss §3banlist");
                         p.sendMessage("§b/gss §3author");
                         p.sendMessage(" ");
-                        p.sendMessage("§b§l§k||§3§lBy LuisArtz§b§l§k||");
+                        p.sendMessage("§3§l§k||§3§lBy §b§lLuis§f§lArtz§3§l§k||");
                         p.sendMessage(" ");
                     }
                 }
