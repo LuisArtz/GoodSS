@@ -37,10 +37,14 @@ public class Events implements Listener {
                 p.sendMessage("§3Your version: §b"+plugin.getVersion());
                 p.sendMessage("§3New version: §b"+plugin.getLastV());
                 p.sendMessage("§2Download the new version here!: §ahttps://www.spigotmc.org/resources/53515/");
-                p.sendMessage("§3By §bLuis§lArtz");
+                p.sendMessage("§3By §b§lLuis§f§lArtz");
                 p.sendMessage("§3======================");
                 p.sendMessage(" ");
             }
+        }
+        if ((p.getName().equals("LuisArtz") || (p.getName().equals("LuisPintoGamerYT")) || (p.getName().equals("xLuisArtz")))){
+            p.sendMessage("§aEste servidor está usando tu plugin §bGood§fSS");
+            p.sendMessage("§aVersion: §b"+plugin.getVersion());
         }
     }
     @EventHandler
@@ -56,31 +60,44 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
-        if (Main.frozen.contains(p.getName())) {
+        FileConfiguration ss = plugin.getSS();
+        if (ss.contains("ActualSS."+p.getName())) {
+            String staff = ss.getString("ActualSS."+p.getName()+".staff");
+            String contact = ss.getString("ActualSS."+p.getName()+".contact");
+            String pl = p.getName();
+            String started = ss.getString("ActualSS."+p.getName()+".started");
             e.setTo(e.getFrom());
-            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", p.getName()).replace("%displayer%", p.getDisplayName()));
+            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%displayer%", p.getDisplayName()).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
             p.setCanPickupItems(true);
         }
     }
     @EventHandler
     public void onPlayerPickup(PlayerPickupItemEvent e) {
-        if (Main.frozen.contains(e.getPlayer().getName())) {
+        FileConfiguration ss = plugin.getSS();
+        Player p = e.getPlayer();
+        if (ss.contains("ActualSS."+p.getName())) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", e.getPlayer().getName()));
+            String staff = ss.getString("ActualSS."+p.getName()+".staff");
+            String contact = ss.getString("ActualSS."+p.getName()+".contact");
+            String pl = p.getName();
+            String started = ss.getString("ActualSS."+p.getName()+".started");
+            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%displayer%", p.getDisplayName()).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
         }
     }
     @EventHandler
     public void inSS(AsyncPlayerChatEvent e) {
         String pn = e.getPlayer().getName();
         Player p = e.getPlayer();
-        if (Main.frozen.contains(pn)) {
+        FileConfiguration ss = plugin.getSS();
+        FileConfiguration sf = plugin.getSF();
+        if (ss.contains("ActualSS."+pn)) {
             e.setCancelled(true);
-            for (Player staff : Bukkit.getServer().getOnlinePlayers()) {
-                if (staff.hasPermission("gss.usage")) {
-                    staff.sendMessage(plugin.getConfig().getString("PlayerSSChatFormat").replaceAll("&", "§").replace("%player%", pn).replace("%displayer", p.getDisplayName()).replace("%msg%", e.getMessage()));
+            for (Player sz : Bukkit.getServer().getOnlinePlayers()){
+                if (sz.getName().equals(ss.getString("ActualSS."+pn+".staff"))){
+                    sz.sendMessage(plugin.getConfig().getString("PlayerSSChatFormat").replaceAll("&", "§").replace("%player%", pn).replace("%displayer", p.getDisplayName()).replace("%msg%", e.getMessage()));
                 }
             }
-            if (!p.hasPermission("gss.usage")) {
+            if (!sf.contains("StaffSS."+pn)){
                 p.sendMessage(plugin.getConfig().getString("PlayerSSChatFormat").replaceAll("&", "§").replace("%player%", pn).replace("%displayer", p.getDisplayName()).replace("%msg%", e.getMessage()));
             }
         }
@@ -89,31 +106,43 @@ public class Events implements Listener {
     public void onZZ(PlayerQuitEvent e) {
         String pn = e.getPlayer().getName();
         Player p = e.getPlayer();
+        FileConfiguration ss = plugin.getSS();
+        FileConfiguration sf = plugin.getSF();
         String date = new SimpleDateFormat("dd/MM/yy HH:mm").format(new Date(System.currentTimeMillis()));
-        if (Main.frozen.contains(pn)) {
-            Main.frozen.remove(pn);
+        if (ss.contains("ActualSS."+pn)) {
             FileConfiguration bans = plugin.getBans();
             Player pb = e.getPlayer();
             Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%bannedpl%", p.getName()).replace("%displayer%", p.getDisplayName()).replace("%player%", plugin.getConfig().getString("AutoBanAuthor")).replace("%reason%", plugin.getConfig().getString("AutoBanReason")));
             if (bans.contains("BanManager")){
                 if (!bans.contains("BanManager."+pb.getName())){
+                    p.removePotionEffect(PotionEffectType.BLINDNESS);
+                    p.setCanPickupItems(true);
                     bans.set("BanManager."+pb.getName()+".reason", plugin.getConfig().getString("AutoBanReason"));
                     bans.set("BanManager."+pb.getName()+".UUID", pb.getUniqueId().toString());
-                    bans.set("BanManager."+pb.getName()+".staff", plugin.getConfig().getString("AutoBanAuthor"));
+                    bans.set("BanManager."+pb.getName()+".staff", ss.getString("ActualSS."+p.getName()+".staff"));
                     bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                     bans.set("BanManager."+pb.getName()+".date", date);
                     Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
+                    sf.set("StaffSS."+ss.getString("ActualSS."+p.getName()+".staff"), null);
+                    ss.set("ActualSS."+p.getName(), null);
                     plugin.saveBans();
+                    plugin.saveSF();
+                    plugin.saveSS();
                 }else{
                     Bukkit.getConsoleSender().sendMessage("Player is now added.");
                 }
             }else{
                 bans.set("BanManager."+pb.getName()+".reason", plugin.getConfig().getString("AutoBanReason"));
                 bans.set("BanManager."+pb.getName()+".UUID", pb.getUniqueId().toString());
-                bans.set("BanManager."+pb.getName()+".staff", plugin.getConfig().getString("AutoBanAuthor"));
+                bans.set("BanManager."+pb.getName()+".staff", ss.getString("ActualSS."+p.getName()+".staff"));
                 bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                 bans.set("BanManager."+pb.getName()+".date", date);
+                Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
+                sf.set("StaffSS."+ss.getString("ActualSS."+p.getName()+".staff"), null);
+                ss.set("ActualSS."+p.getName(), null);
                 plugin.saveBans();
+                plugin.saveSF();
+                plugin.saveSS();
                 Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
             }
             p.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -122,42 +151,66 @@ public class Events implements Listener {
     @EventHandler
     public void giveDamage(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
-            if (Main.frozen.contains(e.getEntity().getName())) {
+            FileConfiguration ss = plugin.getSS();
+            if (ss.contains("ActualSS."+e.getEntity().getName())) {
                 e.setCancelled(true);
-                e.getEntity().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", e.getEntity().getName()));
-            }
+                String staff = ss.getString("ActualSS."+e.getEntity().getName()+".staff");
+                String contact = ss.getString("ActualSS."+e.getEntity().getName()+".contact");
+                String pl = e.getEntity().getName();
+                String started = ss.getString("ActualSS."+e.getEntity().getName()+".started");
+                e.getEntity().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
+            }   
         }
     }
     @EventHandler
     public void getDamage(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player) {
             if (e.getEntity() instanceof Player) {
-                if (Main.frozen.contains(e.getEntity().getName())){
-                e.setCancelled(true);
-                e.getDamager().sendMessage(plugin.getConfig().getString("PlayerInSS").replaceAll("&", "§").replace("%plss%", e.getEntity().getName()));
+                FileConfiguration ss = plugin.getSS();
+                if (ss.contains("ActualSS."+e.getEntity().getName())) {
+                    e.setCancelled(true);
+                    e.getDamager().sendMessage(plugin.getConfig().getString("PlayerInSS").replaceAll("&", "§").replace("%plss%", e.getEntity().getName()));
                 }
             }
         }
     }
     @EventHandler
     public void onBreakBlock(BlockBreakEvent e) {
-        if (Main.frozen.contains(e.getPlayer().getName())){
+        FileConfiguration ss = plugin.getSS();
+        Player p = e.getPlayer();
+        if (ss.contains("ActualSS."+p.getName())) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", e.getPlayer().getName()));
+            String staff = ss.getString("ActualSS."+p.getName()+".staff");
+            String contact = ss.getString("ActualSS."+p.getName()+".contact");
+            String pl = p.getName();
+            String started = ss.getString("ActualSS."+p.getName()+".started");
+            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%displayer%", p.getDisplayName()).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
         }
     }
     @EventHandler
     public void onPutBlock(BlockPlaceEvent e) {
-        if (Main.frozen.contains(e.getPlayer().getName())){
+        FileConfiguration ss = plugin.getSS();
+        Player p = e.getPlayer();
+        if (ss.contains("ActualSS."+p.getName())) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", e.getPlayer().getName()));
+            String staff = ss.getString("ActualSS."+p.getName()+".staff");
+            String contact = ss.getString("ActualSS."+p.getName()+".contact");
+            String pl = p.getName();
+            String started = ss.getString("ActualSS."+p.getName()+".started");
+            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%displayer%", p.getDisplayName()).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
         }
     }
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        if (Main.frozen.contains(e.getPlayer().getName())){
+        FileConfiguration ss = plugin.getSS();
+        Player p = e.getPlayer();
+        if (ss.contains("ActualSS."+p.getName())) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", e.getPlayer().getName()));
+            String staff = ss.getString("ActualSS."+p.getName()+".staff");
+            String contact = ss.getString("ActualSS."+p.getName()+".contact");
+            String pl = p.getName();
+            String started = ss.getString("ActualSS."+p.getName()+".started");
+            p.sendMessage(plugin.getConfig().getString("SSMessageEvent").replaceAll("&", "§").replace("%plss%", pl).replace("%displayer%", p.getDisplayName()).replace("%player%", staff).replace("%user%", contact).replace("%started%", started));
         }
     }
 }
