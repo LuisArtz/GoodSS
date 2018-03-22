@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
+import static me.LuisArtz.SS.TBanConsole.getBanned;
 
 public class CmdgSS implements CommandExecutor {
     public Main plugin;
@@ -27,7 +28,7 @@ public class CmdgSS implements CommandExecutor {
             if (p.hasPermission("gss.usage")) {
                 if (args.length == 0) {
                     p.sendMessage(" ");
-                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv4.0§3§l§k||");
+                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.0§3§l§k||");
                     p.sendMessage(" ");
                     p.sendMessage("§b/gss §3reload");
                     p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
@@ -39,6 +40,7 @@ public class CmdgSS implements CommandExecutor {
                     p.sendMessage("§b/gss §3banlist");
                     p.sendMessage("§b/gss §3checkupdate");
                     p.sendMessage("§b/gss §3author");
+                    p.sendMessage("§b/admit §3(Only for ss players)");
                     p.sendMessage(" ");
                     p.sendMessage("§3§l§k||§3§lBy §b§lLuis§f§lArtz§3§l§k||");
                     p.sendMessage(" ");
@@ -58,7 +60,9 @@ public class CmdgSS implements CommandExecutor {
                                         String reason = bans.getString("BanManager."+banned+".reason");
                                         String staff = bans.getString("BanManager."+banned+".staff");
                                         String date = bans.getString("BanManager."+banned+".date");
-                                        p.sendMessage(plugin.getConfig().getString("BanListFormat").replaceAll("&", "§").replace("%player%", banned).replace("%reason%", reason).replace("%staff%", staff).replace("%date%", date));
+                                        String time = bans.getString("BanManager."+banned+".time");
+                                        p.sendMessage(plugin.getConfig().getString("BanListFormat").replaceAll("&", "§").replace("%reason%", reason).replace("%staff%", staff).replace("%date%", date).replace("%time%", time).replace("%player%", banned));
+                                        return true;
                                     }
                                 }
                             }else{
@@ -101,6 +105,7 @@ public class CmdgSS implements CommandExecutor {
                                             p.teleport(p2.getLocation());
                                             PlayerInventory pynv = p2.getInventory();
                                             p.openInventory(pynv);
+                                            return true;
                                         }
                                     }
                                 }
@@ -129,9 +134,9 @@ public class CmdgSS implements CommandExecutor {
                                             for (int i = 1; i < args.length; i++) {
                                                 razon = razon + args[i] + ' ';
                                             }
-                                            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%bannedpl%", pb.getName()));
-                                            pb.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%date%", date));
-                                             pb.removePotionEffect(PotionEffectType.BLINDNESS);
+                                            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%bannedpl%", pb.getName()).replace("%time%", "Permanently"));
+                                            pb.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%date%", date).replace("%time%", "Permanently"));
+                                            pb.removePotionEffect(PotionEffectType.BLINDNESS);
                                             FileConfiguration bans = plugin.getBans();
                                             if (bans.contains("BanManager")){
                                                 if (!bans.contains("BanManager."+pb.getName())){
@@ -140,11 +145,13 @@ public class CmdgSS implements CommandExecutor {
                                                     bans.set("BanManager."+pb.getName()+".staff", p.getName());
                                                     bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                                                     bans.set("BanManager."+pb.getName()+".date", date);
+                                                    bans.set("BanManager."+pb.getName()+".time", "Permanently");
                                                     ss.set("ActualSS."+pb.getName(), null);
                                                     sf.set("StaffSS."+p.getName(), null);
                                                     plugin.saveBans();
                                                     plugin.saveSS();
                                                     plugin.saveSF();
+                                                    return true;
                                                 }
                                             }else{
                                                 bans.set("BanManager."+pb.getName()+".reason", razon);
@@ -152,11 +159,13 @@ public class CmdgSS implements CommandExecutor {
                                                 bans.set("BanManager."+pb.getName()+".staff", p.getName());
                                                 bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                                                 bans.set("BanManager."+pb.getName()+".date", date);
+                                                bans.set("BanManager."+pb.getName()+".time", "Permanently");
                                                 ss.set("ActualSS."+pb.getName(), null);
                                                 sf.set("StaffSS."+p.getName(), null);
                                                 plugin.saveBans();
                                                 plugin.saveSS();
                                                 plugin.saveSF();
+                                                return true;
                                             }
                                         }
                                     }
@@ -188,10 +197,12 @@ public class CmdgSS implements CommandExecutor {
                                         sf.set("StaffSS."+p.getName(), null);
                                         plugin.saveSS();
                                         plugin.saveSF();
+                                        return true;
                                     }
                                 }
                             }else{
                                 p.sendMessage(plugin.getConfig().getString("StaffNotInSS").replaceAll("&", "§"));
+                                return true;
                             }
                         }catch(Exception ax){
                             p.sendMessage("§cHere is an error!");
@@ -210,6 +221,11 @@ public class CmdgSS implements CommandExecutor {
                                         if (bans.getString("BanManager") == null) {
                                             bans.set("BanManager", null);
                                             plugin.saveBans();
+                                            if(getBanned().containsKey(args[1].toLowerCase())){
+                                                getBanned().remove(args[1].toLowerCase());
+                                                plugin.getServer().getPlayerExact(args[1]).setBanned(false);
+                                                return true;
+                                            }
                                         }
                                     }else{
                                         p.sendMessage(plugin.getConfig().getString("UnbanIncorrect").replaceAll("&", "§"));
@@ -233,6 +249,7 @@ public class CmdgSS implements CommandExecutor {
                                     PlayerInventory pinv = pd.getInventory();
                                     p.openInventory(pinv);
                                     p.sendMessage(plugin.getConfig().getString("OpeningInventory").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", pd.getName()));
+                                    return true;
                                 }
                             }
                         }else{
@@ -245,6 +262,7 @@ public class CmdgSS implements CommandExecutor {
                                 if (pd.getName().equals(sf.getString("StaffSS."+p.getName()+".user"))) {
                                     p.teleport(pd.getLocation());
                                     p.sendMessage(plugin.getConfig().getString("Teleport").replaceAll("&", "§").replace("%plss%", pd.getName()));
+                                    return true;
                                 }
                             }
                         }else{
@@ -273,6 +291,7 @@ public class CmdgSS implements CommandExecutor {
                                p.sendMessage("§3By §b§lLuis§f§lArtz");
                                p.sendMessage("§3======================");
                                p.sendMessage(" ");
+                               return true;
                             }
                         }else{
                             p.sendMessage(plugin.getConfig().getString("PermissionMsg").replaceAll("&", "§"));
@@ -292,7 +311,7 @@ public class CmdgSS implements CommandExecutor {
                         p.sendMessage(" ");
                     }else{
                         p.sendMessage(" ");
-                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv4.0§3§l§k||");
+                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.0§3§l§k||");
                         p.sendMessage(" ");
                         p.sendMessage("§b/gss §3reload");
                         p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
@@ -304,6 +323,7 @@ public class CmdgSS implements CommandExecutor {
                         p.sendMessage("§b/gss §3checkupdate");
                         p.sendMessage("§b/gss §3banlist");
                         p.sendMessage("§b/gss §3author");
+                        p.sendMessage("§b/admit §3(Only for ss players)");
                         p.sendMessage(" ");
                         p.sendMessage("§3§l§k||§3§lBy §b§lLuis§f§lArtz§3§l§k||");
                         p.sendMessage(" ");
