@@ -1,9 +1,13 @@
 name: GoodSS
 main: me.LuisArtz.SS.Main
 author: LuisArtz
-version: 2.1
+version: 5.0
 description: The unique ScreenShare plugin of Spigot
 
 commands:
   gss:
-    description: Set SS Mode
+    description: All commands of GoodSS
+  gstban:
+    description: Temp ban the SS player
+  admit:
+    description: Admit the hacks usage
