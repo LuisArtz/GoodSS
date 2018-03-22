@@ -16,9 +16,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffectType;
+import static me.LuisArtz.SS.TBanConsole.getMSG;
+import static me.LuisArtz.SS.TBanConsole.getBanned;
 
 public class Events implements Listener {
     public Main plugin;
@@ -48,12 +50,33 @@ public class Events implements Listener {
         }
     }
     @EventHandler
-    public void playerIsBanned(PlayerPreLoginEvent e) {
+    public void playerIsBanned(PlayerLoginEvent e) {
         FileConfiguration bans = plugin.getBans();
         if (bans.contains("BanManager")) {
-            if (bans.contains("BanManager."+e.getName())) {
-                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getName()+".date")));
-                e.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, e.getKickMessage());
+            if (bans.contains("BanManager."+e.getPlayer().getName())) {
+                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date").replace("%time%", bans.getString("BanManager."+e.getPlayer().getName()+".time"))));
+                e.disallow(PlayerLoginEvent.Result.KICK_BANNED, e.getKickMessage());
+            }
+        }
+        Player player = e.getPlayer();
+        if(getBanned().containsKey(player.getName().toLowerCase())){
+            if(getBanned().get(player.getName().toLowerCase()) != null){
+                long endOfBan = getBanned().get(player.getName().toLowerCase());
+                long now = System.currentTimeMillis();
+                long diff = endOfBan - now;
+                if(diff<=0){
+                    getBanned().remove(player.getName().toLowerCase());
+                    bans.set("BanManager."+e.getPlayer().getName(), null);
+                    plugin.saveBans();
+                    e.allow();
+                }else{
+                    try{
+                        e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date")).replace("%time%", getMSG(endOfBan)));
+                        e.disallow(PlayerLoginEvent.Result.KICK_OTHER, e.getKickMessage());
+                    }catch(Exception es){
+                        es.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -112,7 +135,7 @@ public class Events implements Listener {
         if (ss.contains("ActualSS."+pn)) {
             FileConfiguration bans = plugin.getBans();
             Player pb = e.getPlayer();
-            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%bannedpl%", p.getName()).replace("%displayer%", p.getDisplayName()).replace("%player%", plugin.getConfig().getString("AutoBanAuthor")).replace("%reason%", plugin.getConfig().getString("AutoBanReason")));
+            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%bannedpl%", p.getName()).replace("%displayer%", p.getDisplayName()).replace("%player%", ss.getString("ActualSS."+pn+".staff")).replace("%reason%", plugin.getConfig().getString("AutoBanReason")));
             if (bans.contains("BanManager")){
                 if (!bans.contains("BanManager."+pb.getName())){
                     p.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -122,12 +145,13 @@ public class Events implements Listener {
                     bans.set("BanManager."+pb.getName()+".staff", ss.getString("ActualSS."+p.getName()+".staff"));
                     bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                     bans.set("BanManager."+pb.getName()+".date", date);
+                    bans.set("BanManager."+pb.getName()+".time", "Permanent");
                     Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
                     sf.set("StaffSS."+ss.getString("ActualSS."+p.getName()+".staff"), null);
                     ss.set("ActualSS."+p.getName(), null);
-                    plugin.saveBans();
                     plugin.saveSF();
                     plugin.saveSS();
+                    plugin.saveBans();
                 }else{
                     Bukkit.getConsoleSender().sendMessage("Player is now added.");
                 }
@@ -137,14 +161,17 @@ public class Events implements Listener {
                 bans.set("BanManager."+pb.getName()+".staff", ss.getString("ActualSS."+p.getName()+".staff"));
                 bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                 bans.set("BanManager."+pb.getName()+".date", date);
+                bans.set("BanManager."+pb.getName()+".time", "Permanent");
                 Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
                 sf.set("StaffSS."+ss.getString("ActualSS."+p.getName()+".staff"), null);
                 ss.set("ActualSS."+p.getName(), null);
-                plugin.saveBans();
                 plugin.saveSF();
                 plugin.saveSS();
-                Bukkit.getConsoleSender().sendMessage("Player added correctly :D thanks for use GoodSS.");
+                plugin.saveBans();
             }
+            p.removePotionEffect(PotionEffectType.BLINDNESS);
+        }
+        if (p.hasPotionEffect(PotionEffectType.BLINDNESS)) {
             p.removePotionEffect(PotionEffectType.BLINDNESS);
         }
     }
