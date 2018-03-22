@@ -2,13 +2,20 @@ package me.LuisArtz.SS;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -18,19 +25,23 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Main extends JavaPlugin {
     // All fundamental data
+    public static HashMap<String, Long> banned = new HashMap<String, Long>();
     FileConfiguration bans = null;
     File bansFile = null;
     FileConfiguration ss = null;
     File ssFile = null;
     FileConfiguration sf = null;
+    public Server server;
+    public Logger log;
     File sfFile = null;
     public String lastversion;
     public String version = getDescription().getVersion();
+	public static String Path = "plugins/GoodSS" + File.separator + "BanList.dat";
     public static PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 10000 * 200, 100, false, true);
     @Override
     public void onEnable() {
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
-        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v4.0");
+        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v5.0");
         Bukkit.getServer().getConsoleSender().sendMessage("Running in " + Bukkit.getServerName());
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
         // Register all ymls
@@ -40,9 +51,19 @@ public class Main extends JavaPlugin {
         registerBans();
         registerSF();
         registerSS();
-        reloadConfig();
-        reloadBans();
         updateChecker();
+        
+	log = this.getLogger();
+	File file = new File(Path);
+	new File("plugins/GoodSS").mkdir();
+	    
+        if(file.exists()){
+            banned = load();
+        }
+        if(banned == null){
+            banned = new HashMap<String, Long>();
+	}
+
     }
     @Override
     public void onDisable(){
@@ -65,6 +86,8 @@ public class Main extends JavaPlugin {
     // Command
     public void registerCommands() {
         getCommand("gss").setExecutor(new CmdgSS(this));
+        getCommand("admit").setExecutor(new AdmitCMD(this));
+        getCommand("gstban").setExecutor(new TBanConsole(this));
     }
     // Bans.yml load
     public FileConfiguration getBans(){
@@ -243,6 +266,36 @@ public class Main extends JavaPlugin {
         if(!sfFile.exists()){
             this.getSF().options().copyDefaults(true);
             saveSF();
+        }
+    }
+    public static void save(){
+        File file = new File("plugins/GoodSS" + File.separator + "Tempbans.dat");
+        new File("plugins/GoodSS").mkdir();
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try{
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Path));
+            oos.writeObject(banned);
+            oos.flush();
+            oos.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Long> load(){
+        try{
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Path));
+            Object result = ois.readObject();
+            ois.close();
+            return (HashMap<String,Long>)result;
+        }catch(Exception e){
+            return null;
         }
     }
 }
