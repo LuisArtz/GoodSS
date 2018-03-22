@@ -9,7 +9,6 @@ UnbanCorrect: '&cThis player has been unbanned correctly'
 UnbanIncorrect: |-
   &cThis player is not banned
   &cOr you were wrong in name
-NotInSS: '&cThis player is not in SS'
 NowInSS: '&cThis player is already in SS'
 PlayerDoesNotExist: '&cThis player does not exist'
 #All SS MESSAGES#
@@ -31,7 +30,7 @@ PlayerSSChatFormat: '&4&lGSS &8» &7%player% &8» &c %msg%'
 #Ban messages format#
 BanFormat: |-
   &d---------------------
-  &d%bannedpl% banned Permanently: %reason% .&5&l%player%
+  &d%bannedpl% banned %time%: %reason% . &5&l%player%
   &d---------------------
 AutoBanReason: '(Automatic Ban)Disconnect in SS'
 BanFormatDisconnect: |-
@@ -40,7 +39,7 @@ BanFormatDisconnect: |-
   &5Banned by: &d%player%
   &5Reason: &d%reason%
   &6Date: &e%date%
-  &5Time: &dPermanente
+  &5Time: &d%time%
   &3
   &2
   &aIf the ban was unfair
@@ -66,11 +65,25 @@ NotBans: |-
   &cThere is no one to unseat.
 #List of banneds players#
 BanListFormat: |-
-  §c-----------------------
-  §5Banned: &d%player%
-  §5Reason: §d%reason%
-  §5Banned by: §d%staff%
-  §5Date: §d%date%
-  §c-----------------------
+  &c-----------------------
+  &5Banned: &d%player%
+  &5Reason: &d%reason%
+  &5Banned by: &d%staff%
+  &5Date: &d%date%
+  &5Time: &d%time%
+  &c-----------------------
 StaffInSS: '&cYou are doing an SS!'
 StaffNotInSS: '&cYou arent doing an SS!'
+AdmitBan:
+    int: 1
+    type: minute
+    reason: 'Admit the use of hacks'
+    staffmsg: '&cThe player %player% has admit the use of hacks. &8Click here.'
+    staffhover: '&7Ban for %int% %type%'
+    # The types only can be:
+    # minute
+    # day
+    # week
+    # month
+    # year
+    # But cant be Seconds...
