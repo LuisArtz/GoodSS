@@ -41,7 +41,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
-        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v5.0");
+        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v5.1");
         Bukkit.getServer().getConsoleSender().sendMessage("Running in " + Bukkit.getServerName());
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
         // Register all ymls
@@ -279,10 +279,10 @@ public class Main extends JavaPlugin {
             }
         }
         try{
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Path));
-            oos.writeObject(banned);
-            oos.flush();
-            oos.close();
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Path))) {
+                oos.writeObject(banned);
+                oos.flush();
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -290,9 +290,10 @@ public class Main extends JavaPlugin {
     @SuppressWarnings("unchecked")
     public static HashMap<String, Long> load(){
         try{
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Path));
-            Object result = ois.readObject();
-            ois.close();
+            Object result;
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Path))) {
+                result = ois.readObject();
+            }
             return (HashMap<String,Long>)result;
         }catch(Exception e){
             return null;
