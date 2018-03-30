@@ -28,7 +28,7 @@ public class CmdgSS implements CommandExecutor {
             if (p.hasPermission("gss.usage")) {
                 if (args.length == 0) {
                     p.sendMessage(" ");
-                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.0§3§l§k||");
+                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.1§3§l§k||");
                     p.sendMessage(" ");
                     p.sendMessage("§b/gss §3reload");
                     p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
@@ -134,6 +134,10 @@ public class CmdgSS implements CommandExecutor {
                                             for (int i = 1; i < args.length; i++) {
                                                 razon = razon + args[i] + ' ';
                                             }
+                                                    ss.set("ActualSS."+pb.getName(), null);
+                                                    sf.set("StaffSS."+p.getName(), null);
+                                                    plugin.saveSS();
+                                                    plugin.saveSF();
                                             Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%bannedpl%", pb.getName()).replace("%time%", "Permanently"));
                                             pb.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%date%", date).replace("%time%", "Permanently"));
                                             pb.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -146,11 +150,7 @@ public class CmdgSS implements CommandExecutor {
                                                     bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                                                     bans.set("BanManager."+pb.getName()+".date", date);
                                                     bans.set("BanManager."+pb.getName()+".time", "Permanently");
-                                                    ss.set("ActualSS."+pb.getName(), null);
-                                                    sf.set("StaffSS."+p.getName(), null);
                                                     plugin.saveBans();
-                                                    plugin.saveSS();
-                                                    plugin.saveSF();
                                                     return true;
                                                 }
                                             }else{
@@ -311,7 +311,7 @@ public class CmdgSS implements CommandExecutor {
                         p.sendMessage(" ");
                     }else{
                         p.sendMessage(" ");
-                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.0§3§l§k||");
+                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.1§3§l§k||");
                         p.sendMessage(" ");
                         p.sendMessage("§b/gss §3reload");
                         p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
