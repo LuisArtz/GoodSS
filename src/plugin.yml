@@ -1,7 +1,7 @@
 name: GoodSS
 main: me.LuisArtz.SS.Main
 author: LuisArtz
-version: 5.0
+version: 5.1
 description: The unique ScreenShare plugin of Spigot
 
 commands:
