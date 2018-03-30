@@ -54,7 +54,7 @@ public class Events implements Listener {
         FileConfiguration bans = plugin.getBans();
         if (bans.contains("BanManager")) {
             if (bans.contains("BanManager."+e.getPlayer().getName())) {
-                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date").replace("%time%", bans.getString("BanManager."+e.getPlayer().getName()+".time"))));
+                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date")).replace("%time%", bans.getString("BanManager."+e.getPlayer().getName()+".time")));
                 e.disallow(PlayerLoginEvent.Result.KICK_BANNED, e.getKickMessage());
             }
         }
@@ -135,7 +135,7 @@ public class Events implements Listener {
         if (ss.contains("ActualSS."+pn)) {
             FileConfiguration bans = plugin.getBans();
             Player pb = e.getPlayer();
-            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%bannedpl%", p.getName()).replace("%displayer%", p.getDisplayName()).replace("%player%", ss.getString("ActualSS."+pn+".staff")).replace("%reason%", plugin.getConfig().getString("AutoBanReason")));
+            Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%bannedpl%", p.getName()).replace("%displayer%", p.getDisplayName()).replace("%player%", ss.getString("ActualSS."+pn+".staff")).replace("%reason%", plugin.getConfig().getString("AutoBanReason")).replace("%time%", "Permanently"));
             if (bans.contains("BanManager")){
                 if (!bans.contains("BanManager."+pb.getName())){
                     p.removePotionEffect(PotionEffectType.BLINDNESS);
