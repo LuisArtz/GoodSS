@@ -1,5 +1,7 @@
 package me.LuisArtz.SS;
 
+import com.connorlinfoot.titleapi.TitleAPI;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import static me.LuisArtz.SS.Main.effect;
@@ -8,10 +10,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffectType;
 import static me.LuisArtz.SS.TBanConsole.getBanned;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 public class CmdgSS implements CommandExecutor {
     public Main plugin;
@@ -19,7 +21,6 @@ public class CmdgSS implements CommandExecutor {
     public CmdgSS(Main plugin) {
        this.plugin = plugin;
     }
-      
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
     if (cmd.getName().equalsIgnoreCase("gss")) {
@@ -28,7 +29,7 @@ public class CmdgSS implements CommandExecutor {
             if (p.hasPermission("gss.usage")) {
                 if (args.length == 0) {
                     p.sendMessage(" ");
-                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.1§3§l§k||");
+                    p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv6.0§3§l§k||");
                     p.sendMessage(" ");
                     p.sendMessage("§b/gss §3reload");
                     p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
@@ -48,6 +49,19 @@ public class CmdgSS implements CommandExecutor {
                     if (args[0].equalsIgnoreCase("reload")) {
                         plugin.reloadConfig();
                         plugin.reloadBans();
+                        plugin.sfFile = new File(plugin.getDataFolder(), "tempsfdata.yml");
+                        plugin.ssFile = new File(plugin.getDataFolder(), "tempssdata.yml");
+                        if (plugin.sfFile.exists()){
+                            plugin.sfFile.delete();
+                            plugin.getSF().options().copyDefaults();
+                            plugin.saveSF();
+                        }
+                        if (plugin.ssFile.exists()){
+                            plugin.ssFile.delete();
+                            plugin.getSS().options().copyDefaults();
+                            plugin.saveSS();
+                        }
+                        TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.reload.ti"), plugin.getConfig().getString("Titles.reload.subt"));
                         p.sendMessage(plugin.getConfig().getString("Reload").replaceAll("&", "§"));
                     }else if (args[0].equalsIgnoreCase("banlist")){
                         if (p.hasPermission("gss.banlist")){
@@ -86,11 +100,13 @@ public class CmdgSS implements CommandExecutor {
                                         if ((sf.contains("StaffSS")) && (sf.contains("StaffSS."+p.getName()))) {
                                             p.sendMessage(plugin.getConfig().getString("StaffInSS").replaceAll("&", "§"));
                                         }else{
+                                            String date = new SimpleDateFormat("HH:mm").format(new Date(System.currentTimeMillis()));
                                             String user = "";
                                             for (int i = 2; i < args.length; i++) {
                                                 user = user + args[i] + ' ';
                                             }
-                                            String date = new SimpleDateFormat("HH:mm").format(new Date(System.currentTimeMillis()));
+                                            TitleAPI.sendTitle(p2, 20, 40, 20, plugin.getConfig().getString("Titles.start.ti"), plugin.getConfig().getString("Titles.start.subt").replace("%contact%", user));
+                                            TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.start.staff"), plugin.getConfig().getString("Titles.start.stsubt").replace("%player%", p2.getName()));
                                             ss.set("ActualSS."+p2.getName()+".staff", p.getName());
                                             ss.set("ActualSS."+p2.getName()+".started", date);
                                             ss.set("ActualSS."+p2.getName()+".uuid", p2.getUniqueId().toString());
@@ -138,6 +154,7 @@ public class CmdgSS implements CommandExecutor {
                                                     sf.set("StaffSS."+p.getName(), null);
                                                     plugin.saveSS();
                                                     plugin.saveSF();
+                                            TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.ban.ti").replace("%player%", pb.getName()), plugin.getConfig().getString("Titles.ban.subt").replace("%reason%", razon));
                                             Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%bannedpl%", pb.getName()).replace("%time%", "Permanently"));
                                             pb.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", p.getName()).replace("%reason%", razon).replace("%date%", date).replace("%time%", "Permanently"));
                                             pb.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -193,6 +210,8 @@ public class CmdgSS implements CommandExecutor {
                                         pd.setCanPickupItems(true);
                                         Bukkit.broadcastMessage(plugin.getConfig().getString("LeaveSSGlobal").replaceAll("&", "§").replace("%player%", p.getName()).replace("%plss%", pd.getName()));
                                         pd.removePotionEffect(PotionEffectType.BLINDNESS);
+                                        TitleAPI.sendTitle(pd, 20, 40, 20, plugin.getConfig().getString("Titles.stop.ti"), plugin.getConfig().getString("Titles.stop.subt"));
+                                        TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.stop.staff").replace("%player%", pd.getName()), plugin.getConfig().getString("Titles.stop.stsubt").replace("%player%", pd.getName()));
                                         ss.set("ActualSS."+pd.getName(), null);
                                         sf.set("StaffSS."+p.getName(), null);
                                         plugin.saveSS();
@@ -311,7 +330,7 @@ public class CmdgSS implements CommandExecutor {
                         p.sendMessage(" ");
                     }else{
                         p.sendMessage(" ");
-                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv5.1§3§l§k||");
+                        p.sendMessage("§3§l§k||§b§lGood§f§lSS §b§lv6.0§3§l§k||");
                         p.sendMessage(" ");
                         p.sendMessage("§b/gss §3reload");
                         p.sendMessage("§b/gss §3start <player> <AnyDesk/Skype/Ts>");
