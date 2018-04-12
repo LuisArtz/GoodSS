@@ -1,5 +1,6 @@
 package me.LuisArtz.SS;
 
+import com.connorlinfoot.titleapi.TitleAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -32,6 +33,8 @@ public class AdmitCMD implements CommandExecutor {
                             cmp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("AdmitBan.staffhover").replace("%type%", plugin.getConfig().getString("AdmitBan.type")).replace("%int%", plugin.getConfig().getString("AdmitBan.int")))).create()));
                             cmp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND ,"/gstban"));
                             sz.spigot().sendMessage(cmp);
+                            TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.admit.ti"), plugin.getConfig().getString("Titles.admit.subt"));
+                            TitleAPI.sendTitle(sz, 20, 40, 20, plugin.getConfig().getString("Titles.admit.staff").replace("%player%", p.getName()), plugin.getConfig().getString("Titles.admit.stsubt"));
                             return true;
                         }
                     }
