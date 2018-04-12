@@ -87,3 +87,33 @@ AdmitBan:
     # month
     # year
     # But cant be Seconds...
+#NEW TITLES!
+Titles:
+    start:
+        # All mesages for the title when start the SS
+        ti: '&c&lYou are in SS'
+        subt: '&eAnyDesk/Skype/Ts &6> &f%contact%'
+        staff: '&a&lSS started'
+        stsubt: '&7Wait to &8> &f%player%'
+    stop:
+        # All mesages for the title when stop the SS
+        ti: '&a&lYou arent now in SS'
+        subt: '&7Sorry for the inconvenience'
+        staff: '&a&lSS stoped'
+        stsubt: '&7You leave &8> &f%player%'
+    admit:
+        ti: '&a&lThanks for admit'
+        subt: '&7You will banned for a time'
+        staff: '&a&l%player% ADMIT!'
+        stsubt: '&7Click on the message for tempban'
+        #The ban titles only send to staff
+        ban: '&c&l%player% TempBanned'
+        bansubt: '&7Time: %time%'
+    ban:
+        #This send the title only of the staff
+        ti: '&c&l%player% banned'
+        subt: '&6Reason: &e%reason%'
+    reload:
+        # This send the message only of the executor
+        ti: '&a&lPlugin reloaded!'
+        subt: '&7All cache files recreateds'
