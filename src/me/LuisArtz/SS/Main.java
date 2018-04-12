@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin{
     // All fundamental data
     public static HashMap<String, Long> banned = new HashMap<String, Long>();
     FileConfiguration bans = null;
@@ -36,12 +36,12 @@ public class Main extends JavaPlugin {
     File sfFile = null;
     public String lastversion;
     public String version = getDescription().getVersion();
-	public static String Path = "plugins/GoodSS" + File.separator + "BanList.dat";
+    public static String Path = "plugins/GoodSS" + File.separator + "tempban.dat";
     public static PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 10000 * 200, 100, false, true);
     @Override
     public void onEnable() {
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
-        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v5.1");
+        Bukkit.getServer().getConsoleSender().sendMessage("GoodSS By LuisArtz v6.0");
         Bukkit.getServer().getConsoleSender().sendMessage("Running in " + Bukkit.getServerName());
         Bukkit.getServer().getConsoleSender().sendMessage("==================");
         // Register all ymls
@@ -269,7 +269,7 @@ public class Main extends JavaPlugin {
         }
     }
     public static void save(){
-        File file = new File("plugins/GoodSS" + File.separator + "Tempbans.dat");
+        File file = new File("plugins/GoodSS" + File.separator + "tempban.dat");
         new File("plugins/GoodSS").mkdir();
         if(!file.exists()){
             try {
