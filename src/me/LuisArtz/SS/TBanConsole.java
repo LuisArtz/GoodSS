@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package me.LuisArtz.SS;
 
+import com.connorlinfoot.titleapi.TitleAPI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +44,7 @@ public class TBanConsole implements CommandExecutor {
                                 bans.set("BanManager."+pb.getName()+".staff", p.getName());
                                 bans.set("BanManager."+pb.getName()+".ip", pb.getAddress().toString());
                                 bans.set("BanManager."+pb.getName()+".date", date);
+                                TitleAPI.sendTitle(p, 20, 40, 20, plugin.getConfig().getString("Titles.admit.ban").replace("%player%", pb.getName()), plugin.getConfig().getString("Titles.admit.bansubt").replace("%time%", plugin.getConfig().getString("AdmitBan.int")+plugin.getConfig().getString("AdmitBan.type")));
                                 plugin.saveBans();
                                 return true;
                             }
@@ -71,10 +68,11 @@ public class TBanConsole implements CommandExecutor {
                         razon = razon + args[i] + ' ';
                     }
                     bans.set("BanManager."+target.getName()+".reason", razon);
-                    bans.set("BanManager."+target.getName()+".time", getMSG(endOfBan));
+                    bans.set("BanManager."+target.getName()+".time", plugin.getConfig().getString("AdmitBan.int")+" "+ plugin.getConfig().getString("AdmitBan.type"));
                     ss.set("ActualSS."+user, null);
                     sf.set("StaffSS."+staff, null);plugin.saveSS();
                     plugin.saveSF();
+                    Main.save();
                     Bukkit.broadcastMessage(plugin.getConfig().getString("BanFormat").replaceAll("&", "§").replace("%player%", staff).replace("%reason%", razon).replace("%bannedpl%", user).replace("%time%", bans.getString("BanManager."+user+".time")));
                     target.kickPlayer(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", staff).replace("%reason%", razon).replace("%date%", date).replace("%time%", bans.getString("BanManager."+user+".time")));
                     return true;
