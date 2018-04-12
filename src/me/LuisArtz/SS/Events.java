@@ -54,8 +54,8 @@ public class Events implements Listener {
         FileConfiguration bans = plugin.getBans();
         if (bans.contains("BanManager")) {
             if (bans.contains("BanManager."+e.getPlayer().getName())) {
-                e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date")).replace("%time%", bans.getString("BanManager."+e.getPlayer().getName()+".time")));
-                e.disallow(PlayerLoginEvent.Result.KICK_BANNED, e.getKickMessage());
+                    e.setKickMessage(plugin.getConfig().getString("BanFormatDisconnect").replaceAll("&", "§").replace("%player%", bans.getString("BanManager."+e.getPlayer().getName()+".staff")).replace("%reason%", bans.getString("BanManager."+e.getPlayer().getName()+".reason")).replace("%date%", bans.getString("BanManager."+e.getPlayer().getName()+".date")).replace("%time%", bans.getString("BanManager."+e.getPlayer().getName()+".time")));
+                    e.disallow(PlayerLoginEvent.Result.KICK_BANNED, e.getKickMessage());
             }
         }
         Player player = e.getPlayer();
