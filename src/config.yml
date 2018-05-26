@@ -29,9 +29,9 @@ SSMessageEvent: |-
 PlayerSSChatFormat: '&4&lGSS &8» &7%player% &8» &c %msg%'
 #Ban messages format#
 BanFormat: |-
-  &d---------------------
+  &5&l&m=====================
   &d%bannedpl% banned %time%: %reason% . &5&l%player%
-  &d---------------------
+  &5&l&m=====================
 AutoBanReason: '(Automatic Ban)Disconnect in SS'
 BanFormatDisconnect: |-
   &4You have been banned permanently(GoodSS)
@@ -44,10 +44,10 @@ BanFormatDisconnect: |-
   &2
   &aIf the ban was unfair
   &aWe recommend you to appeal on our page
-  &2&mhttps://www.appealpage.net/
+  &2&nhttps://www.appealpage.net/
   &cIf the ban was fair
   &cWe invite you to buy your unban
-  &4&mhttps://www.buypage.net/
+  &4&nhttps://www.buypage.net/
   &c
   &3&l&k||&b&lYourServer&3&l&k||
 #Inventory Format#
@@ -74,6 +74,17 @@ BanListFormat: |-
   &c-----------------------
 StaffInSS: '&cYou are doing an SS!'
 StaffNotInSS: '&cYou arent doing an SS!'
+Blocked: '&cThe command is now blocked.'
+CmdAdded: '&cThe command &e%cmd%&c has been added correctly.'
+ToggleSpawn: |-
+  &aThe spawn has been toggled
+  &cThe spawn is now &b%toggle%
+PutSSpawn: |-
+  &aSpawn set correctly. &cFor &benable&c usage&e /gss togglespawn
+  &bSet on &7(&e%x%&7)&6x &7(&c%y%&7)&4y &7(&d%z%&7)&5z &7(&b%pitch%&7)&3pth &7(&2%yaw%&7)&ayw &7(&3%world%&7)&bworld
+EnableSSpawn: '&aSpawn enabled.'
+EnableFailed: "&4&lFAILED &8» &cThis has not been possible because the spawn has not been positioned"
+MovementDisable: false
 AdmitBan:
     int: 1
     type: minute
@@ -117,3 +128,15 @@ Titles:
         # This send the message only of the executor
         ti: '&a&lPlugin reloaded!'
         subt: '&7All cache files recreateds'
+SSpawn:
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 0
+    world: 'null'
+    enabled: false
+CommandsBlockeds:
+- '*'
+# You can add more commands, the "*" is for block ALL commands
+# But dont block the "/admit"
